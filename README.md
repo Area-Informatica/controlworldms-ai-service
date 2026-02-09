@@ -275,8 +275,3 @@ Una vez ejecutado el servidor, accede a:
 
 - [x] Módulo HSE - Análisis 5 Porqués
 - [ ] ...
-
-
-## 📄 Licencia
-
-Este proyecto es privado y de uso exclusivo de Area Informática.
