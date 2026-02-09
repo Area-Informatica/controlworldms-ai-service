@@ -27,13 +27,13 @@ async def generar_analisis(data: IncidentRequest):
         """
         
         # 3. Configuración
-        config: RunnableConfig = {"configurable": {"thread_id": str(uuid.uuid4())}}
+        # Eliminamos checkpointer y thread_id ya que es una llamada stateless (una sola vuelta)
+        # config: RunnableConfig = {"configurable": {"thread_id": str(uuid.uuid4())}}
 
         # 4. Invocar al agente
         # Gracias a response_format, el resultado ya viene estructurado en 'structured_response'
         result = agent.invoke(
-            {"messages": [HumanMessage(content=incident_context)]},
-            config=config
+            {"messages": [HumanMessage(content=incident_context)]}
         )
         
         # 5. Extraer respuesta estructurada (Best Practice: No parsing manual)
