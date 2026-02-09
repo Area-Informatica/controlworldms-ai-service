@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from app.schemas.hse_schemas import IncidentRequest, IncidentAnalysisResponse
-from app.services.llm_utils import get_hse_agent
+from app.agents.hse_agent import get_hse_agent
 from langchain.messages import HumanMessage
 from langchain_core.runnables import RunnableConfig
 import uuid

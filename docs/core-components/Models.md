@@ -174,7 +174,7 @@ The easiest way to get started with a standalone model in LangChain is to use [`
       # https://docs.aws.amazon.com/bedrock/latest/userguide/getting-started.html
 
       model = init_chat_model(
-          "anthropic.claude-3-5-sonnet-20240620-v1:0",
+          "anthropic.claude-sonnet-4-5-20250929-v1:0",
           model_provider="bedrock_converse",
       )
       ```
@@ -182,7 +182,7 @@ The easiest way to get started with a standalone model in LangChain is to use [`
       ```python Model Class theme={null}
       from langchain_aws import ChatBedrock
 
-      model = ChatBedrock(model="anthropic.claude-3-5-sonnet-20240620-v1:0")
+      model = ChatBedrock(model="anthropic.claude-sonnet-4-5-20250929-v1:0")
       ```
     </CodeGroup>
   </Tab>
