@@ -1,0 +1,244 @@
+WOG:
+  formato: "{subtipo} {diametro} {material} {conexion} {rating}"
+  campos:
+    subtipo:
+      requerido: true
+      tipo: lista_abierta
+      valores_estandar:
+        - CODO 90
+        - CODO 45
+        - TEE
+        - REDUCCION
+        - UNION AMERICANA
+        - COPLA
+        - NIPPLE
+        - VALVULA BOLA
+        - VALVULA MARIPOSA
+        - VALVULA COMPUERTA
+        - VALVULA CHECK
+        - FLANGE
+    diametro:
+      requerido: true
+      tipo: lista_cerrada
+      valores_estandar: ['1/8"', '1/4"', '3/8"', '1/2"', '3/4"', '1"', '1-1/4"', '1-1/2"', '2"', '2-1/2"', '3"', '4"', '5"', '6"', '8"', '10"', '12"', '14"', '16"']
+    material:
+      requerido: true
+      tipo: lista_abierta
+      valores_estandar: [INOX 304, INOX 316, ACERO CARBONO A105, ACERO CARBONO A234, BRONCE, PVC, CPVC, HDPE, GALVANIZADO]
+    conexion:
+      requerido: true
+      tipo: lista_abierta
+      valores_estandar: [NPT, BSP, SW, BW, FLANGE, RANURADO, PEGAR]
+    rating:
+      requerido: false
+      tipo: lista_abierta
+      valores_estandar: [150#, 300#, 600#, 800#, 3000#, 6000#, SCH10, SCH40, SCH80, STD, XS]
+
+EPP:
+  formato: "{subtipo} {descripcion} {talla} {color} {certificacion}"
+  campos:
+    subtipo:
+      requerido: true
+      tipo: lista_cerrada
+      valores_estandar: [CASCO, LENTE, GUANTE, ZAPATO, PROTECTOR AUDITIVO, ARNES, RESPIRADOR, ROPA, CHALECO GEOLOGO, MASCARILLA]
+    descripcion:
+      requerido: true
+      tipo: texto_libre
+      ejemplo: SEGURIDAD, CABRITILLA, MULTIPROPOSITO, ANTIPARRA, FONOAUDIBLE
+    talla:
+      requerido: false
+      tipo: lista_cerrada
+      valores_estandar: [XS, S, M, L, XL, XXL, XXXL, ESTANDAR, UNICA, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45]
+    color:
+      requerido: false
+      tipo: lista_abierta
+      valores_estandar: [BLANCO, NEGRO, AZUL, ROJO, AMARILLO, NARANJO, VERDE, GRIS, TRANSPARENTE, FLUOR]
+    certificacion:
+      requerido: false
+      tipo: texto_libre
+      ejemplo: ANSI, NIOSH, CSA
+
+ASEO:
+  formato: "{categoria} {producto} {aroma} {formato} {marca}"
+  campos:
+    categoria:
+      requerido: true
+      tipo: lista_cerrada
+      valores_estandar: [LIMPIEZA, HIGIENE, BASURA, INDUSTRIAL]
+    producto:
+      requerido: true
+      tipo: texto_libre
+      ejemplo: CLORO, DETERGENTE, JABON, PAPEL HIGIENICO, TOALLA NOVA, BOLSA BASURA
+    aroma:
+      requerido: false
+      tipo: lista_abierta
+      valores_estandar: [LAVANDA, LIMON, MANZANA, NEUTRO, FLORAL]
+    formato:
+      requerido: true
+      tipo: lista_abierta
+      valores_estandar: [1L, 5L, 20L, 5KG, 25KG, PACK 6, ROLLO, CAJA]
+    marca:
+      requerido: false
+      tipo: texto_libre
+      valores_estandar: [GENERICO, ELITE, CONFORT, TORK, VIRUTEX]
+
+OFICINA:
+  formato: "{categoria} {producto} {detalle} {unidad} {marca}"
+  campos:
+    categoria:
+      requerido: true
+      tipo: lista_cerrada
+      valores_estandar: [ESCRITORIO, PAPELERIA, ARCHIVO, MUEBLE]
+    producto:
+      requerido: true
+      tipo: texto_libre
+      ejemplo: LAPIZ PASTA, CUADERNO, CORCHETERA, PERFORADORA, CINTA ADHESIVA
+    detalle:
+      requerido: false
+      tipo: texto_libre
+      ejemplo: AZUL, ROJO, 100 HOJAS, CARTA, OFICIO
+    unidad:
+      requerido: true
+      tipo: lista_cerrada
+      valores_estandar: [UNIDAD, CAJA, RESMA, PAQUETE, JUEGO]
+    marca:
+      requerido: false
+      tipo: texto_libre
+
+COMBUSTIBLE:
+  formato: "{tipo} {viscosidad} {formato} {marca}"
+  campos:
+    tipo:
+      requerido: true
+      tipo: lista_cerrada
+      valores_estandar: [PETROLEO, BENCINA, ACEITE MOTOR, ACEITE HIDRAULICO, GRASA, REFRIGERANTE, ADITIVO]
+    viscosidad:
+      requerido: false
+      tipo: lista_abierta
+      valores_estandar: [15W40, 10W40, 5W30, 80W90, ISO 68, EP2, 93 OCT, 95 OCT, 97 OCT, DIESEL]
+    formato:
+      requerido: true
+      tipo: lista_abierta
+      valores_estandar: [BALDE 19L, TAMBOR 208L, LITRO, GALON 3.78L, CARTUCHO, IBC 1000L]
+    marca:
+      requerido: false
+      tipo: lista_abierta
+      valores_estandar: [SHELL, MOBIL, COPEC, CHEVRON, TOTAL, CASTROL]
+
+CONSTRUCCION:
+  formato: "{categoria} {material} {dimensiones} {unidad}"
+  campos:
+    categoria:
+      requerido: true
+      tipo: lista_cerrada
+      valores_estandar: [ESTRUCTURAL, ARIDOS, TERMINACIONES, FIJACIONES, MADERAS, CEMENTOS]
+    material:
+      requerido: true
+      tipo: texto_libre
+      ejemplo: FIERRO, PERFIL CUADRADO, PLANCHA ZINC, CEMENTO, ARENA, CLAVO
+    dimensiones:
+      requerido: true
+      tipo: texto_libre
+      ejemplo: 2X2X6M, 10MM, 25KG, 6M
+    unidad:
+      requerido: true
+      tipo: lista_cerrada
+      valores_estandar: [TIRA, UNIDAD, SACO, M3, KG, PLANCHA, METRO]
+
+VEHICULOS:
+  formato: "{sistema} {repuesto} {modelo_vehiculo} {marca_repuesto}"
+  campos:
+    sistema:
+      requerido: true
+      tipo: lista_cerrada
+      valores_estandar: [MOTOR, FRENOS, SUSPENSION, ELECTRICO, CARROCERIA, FILTROS, NEUMATICOS]
+    repuesto:
+      requerido: true
+      tipo: texto_libre
+      ejemplo: PASTILLA FRENO, AMORTIGUADOR, ESPEJO, OPTICO, FILTRO ACEITE
+    modelo_vehiculo:
+      requerido: true
+      tipo: texto_libre
+      ejemplo: TOYOTA HILUX, MITSUBISHI L200, NISSAN NP300, CAMION VOLVO
+    marca_repuesto:
+      requerido: false
+      tipo: texto_libre
+      valores_estandar: [ORIGINAL, ALTERNATIVO, BOSCH, MANN]
+
+ELECTRICIDAD:
+  formato: "{categoria} {tipo} {especificacion} {marca}"
+  campos:
+    categoria:
+      requerido: true
+      tipo: lista_cerrada
+      valores_estandar: [CONDUCTOR, PROTECCION, ILUMINACION, FERRETERIA ELECTRICA, INSTRUMENTACION]
+    tipo:
+      requerido: true
+      tipo: texto_libre
+      ejemplo: CABLE THHN, AUTOMATICO, ENCHUFE, INTERRUPTOR, FOCO LED
+    especificacion:
+      requerido: true
+      tipo: texto_libre
+      ejemplo: 2.5MM, 10A, 16A, 220V, 50W, 3X1.5
+    marca:
+      requerido: false
+      tipo: lista_abierta
+      valores_estandar: [LEGRAND, SCHNEIDER, BTICINO, PHILIPS, 3M]
+
+EQUIPOS:
+  formato: "{tipo} {modelo} {capacidad} {marca}"
+  campos:
+    tipo:
+      requerido: true
+      tipo: lista_abierta
+      valores_estandar: [GENERADOR, COMPRESOR, SOLDADORA, TALADRO PEDESTAL, BETONERA, GRUA, CAMIONETA]
+    modelo:
+      requerido: false
+      tipo: texto_libre
+    capacidad:
+      requerido: false
+      tipo: texto_libre
+      ejemplo: 50KVA, 100L, 250A, 1HP
+    marca:
+      requerido: true
+      tipo: texto_libre
+
+HERRAMIENTAS:
+  formato: "{tipo} {nombre} {medida} {marca}"
+  campos:
+    tipo:
+      requerido: true
+      tipo: lista_cerrada
+      valores_estandar: [MANUAL, ELECTRICA, NEUMATICA, MEDICION, CORTE]
+    nombre:
+      requerido: true
+      tipo: texto_libre
+      ejemplo: ALICATE, DESTORNILLADOR, LLAVE PUNTA CORONA, SIERRA CIRCULAR
+    medida:
+      requerido: false
+      tipo: texto_libre
+      ejemplo: 8", 1/2", 10MM, SET
+    marca:
+      requerido: false
+      tipo: lista_abierta
+      valores_estandar: [STANLEY, MAKITA, DEWALT, MILWAUKEE, BAHCO, SATA]
+
+COMPUTACIONAL:
+  formato: "{categoria} {producto} {especificacion} {marca}"
+  campos:
+    categoria:
+      requerido: true
+      tipo: lista_cerrada
+      valores_estandar: [NOTEBOOK, MONITOR, IMPRESORA, ACCESORIO, COMPONENTE, PERIFERICO, RED, SOFTWARE]
+    producto:
+      requerido: true
+      tipo: texto_libre
+      ejemplo: PC ESCRITORIO, LAPTOP, MOUSE, TECLADO, DISCO DURO, MEMORIA RAM, SWITCH, ROUTER
+    especificacion:
+      requerido: true
+      tipo: texto_libre
+      ejemplo: CORE I7 16GB, 27 PULGADAS, SSD 500GB, INALAMBRICO, 8 PUERTOS
+    marca:
+      requerido: false
+      tipo: lista_abierta
+      valores_estandar: [HP, DELL, LENOVO, ASUS, LOGITECH, SAMSUNG, LG, KINGSTON, SEAGATE, CISCO, MICROSOFT]

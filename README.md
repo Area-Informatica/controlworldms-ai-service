@@ -18,6 +18,7 @@ Este microservicio actúa como el **cerebro de IA** del ecosistema ControlWorldM
 - Análisis automatizado de incidentes de seguridad (HSE)
 - Generación de reportes estructurados mediante IA
 - Procesamiento de lenguaje natural para casos de uso específicos del negocio
+- **Estandarización de Artículos (WIP):** Chatbot inteligente para la creación normalizada de materiales en el ERP Defontana.
 - Escalabilidad independiente de las capacidades de IA
 
 ---

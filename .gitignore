@@ -25,6 +25,7 @@ build/
 
 # Logs
 *.log
+logs/
 
 # IDE specific settings
 .vscode/

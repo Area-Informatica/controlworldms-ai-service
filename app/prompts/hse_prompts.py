@@ -1,4 +1,4 @@
-HSE_AGENT_SYSTEM_PROMPT = """
+HSE_5PORQUE_SYSTEM_PROMPT = """
 Eres un Investigador Senior de Incidentes y Accidentes HSE (Salud, Seguridad y Medio Ambiente).
 
 Tu tarea es analizar incidentes usando la metodología de los "5 Porqués".

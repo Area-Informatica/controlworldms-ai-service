@@ -1,7 +1,12 @@
+import os
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import hse
+from app.routers import hse, articulo
 # from app.routers import rrhh  <-- Descomentarás esto cuando crees el módulo de RRHH
+
+# Cargar variables de entorno
+load_dotenv()
 
 # 1. Configuración de la Aplicación
 app = FastAPI(
@@ -11,10 +16,22 @@ app = FastAPI(
 )
 
 # 2. Configuración de CORS (Seguridad)
-# Permite que solo tu servidor local (Laravel) se conecte, o cualquier origen si lo dejas en ["*"]
+# Determinar orígenes permitidos según entorno
+app_env = os.getenv("APP_ENV", "local")
+allowed_origins_str = os.getenv("ALLOWED_ORIGINS", "")
+
+if app_env == "production":
+    if allowed_origins_str:
+        origins = [origin.strip() for origin in allowed_origins_str.split(",")]
+    else:
+        # Fallback seguro o advertencia en logs
+        origins = [] 
+else:
+    origins = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # En producción cambiar por ["http://tu-dominio.cl"]
+    allow_origins=origins, 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -23,6 +40,7 @@ app.add_middleware(
 # 3. Registro de Rutas (Routers)
 # Aquí le dices a FastAPI: "Todo lo que esté en hse.py, ponlo bajo la url /hse"
 app.include_router(hse.router, prefix="/hse", tags=["HSE"])
+app.include_router(articulo.router, prefix="/articulo", tags=["Articulos"])
 
 # app.include_router(rrhh.router, prefix="/rrhh", tags=["RRHH"]) <-- Futuro módulo
 
