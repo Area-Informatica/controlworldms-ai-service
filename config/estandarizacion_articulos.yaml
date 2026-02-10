@@ -1,244 +1,375 @@
+# =============================================================================
+# CONFIGURACIÓN DE ESTANDARIZACIÓN DE ARTÍCULOS - ControlWorldMS
+# =============================================================================
+# CRITERIO DE DISEÑO:
+# - Campos REQUERIDOS: Esenciales para identificar el artículo y comprarlo correctamente
+# - Campos OPCIONALES: Útiles pero no críticos (el artículo puede funcionar sin ellos)
+# - Se evitan campos que generan duplicados innecesarios (ej: colores en herramientas)
+# =============================================================================
+# CATEGORÍAS ACTIVAS: 16
+# EPP, WOG, ASEO, OFICINA, COMBUSTIBLE, CONSTRUCCION, VEHICULOS, ELECTRICIDAD,
+# INSTRUMENTACION, EQUIPOS, HERRAMIENTAS, COMPUTACIONAL, SOLDADURA, PINTURA,
+# SEGURIDAD_INDUSTRIAL, FERRETERIA, QUIMICOS, CONSUMIBLES, IZAJE
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# EPP - Elementos de Protección Personal
+# -----------------------------------------------------------------------------
+# FILOSOFÍA: Un EPP debe identificarse por su función protectora y fit.
+# La talla es crítica para ropa/calzado. Color y marca son secundarios.
+EPP:
+  formato: "{subtipo} {descripcion} {talla}"
+  campos:
+    subtipo:
+      requerido: true
+      tipo: lista_cerrada
+      valores_estandar: [CASCO, LENTE, GUANTE, ZAPATO, BOTA, PROTECTOR AUDITIVO, ARNES, RESPIRADOR, ROPA, OVEROL, CHALECO, MASCARILLA, PARKA, PANTALON, CHAQUETA, BUZO]
+    descripcion:
+      requerido: true
+      tipo: lista_abierta
+      valores_estandar: [SEGURIDAD, SOLDADOR, CABRITILLA, NITRILO, LATEX, ANTICORTE, DIELECTRICO, ANTIPARRA, OSCURO, CLARO, TIPO TAPON, TIPO FONO, MEDIA CARA, CARA COMPLETA, ALTA VISIBILIDAD, DESECHABLE, KEVLAR, IGNIFUGO]
+      ejemplo: "Clasificación general del EPP, NO detalles constructivos"
+    talla:
+      requerido: false
+      tipo: lista_abierta
+      valores_estandar: [XS, S, M, L, XL, XXL, UNICA, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45]
+      ejemplo: "Para ropa/calzado. Cascos y lentes generalmente son UNICA"
+  # EXCLUIDOS: Color, Marca, Certificación (no identifican el SKU)
+
+# -----------------------------------------------------------------------------
+# WOG - Water, Oil, Gas (Fitting y Válvulas)
+# -----------------------------------------------------------------------------
+# FILOSOFÍA: Diámetro + material + conexión definen compatibilidad.
 WOG:
   formato: "{subtipo} {diametro} {material} {conexion} {rating}"
   campos:
     subtipo:
       requerido: true
       tipo: lista_abierta
-      valores_estandar:
-        - CODO 90
-        - CODO 45
-        - TEE
-        - REDUCCION
-        - UNION AMERICANA
-        - COPLA
-        - NIPPLE
-        - VALVULA BOLA
-        - VALVULA MARIPOSA
-        - VALVULA COMPUERTA
-        - VALVULA CHECK
-        - FLANGE
+      valores_estandar: [CAÑERIA, CODO 90, CODO 45, TEE, REDUCCION, UNION AMERICANA, COPLA, NIPPLE, VALVULA BOLA, VALVULA COMPUERTA, VALVULA CHECK, FLANGE, TAPON, BUSHING, MANGUERA]
     diametro:
       requerido: true
-      tipo: lista_cerrada
-      valores_estandar: ['1/8"', '1/4"', '3/8"', '1/2"', '3/4"', '1"', '1-1/4"', '1-1/2"', '2"', '2-1/2"', '3"', '4"', '5"', '6"', '8"', '10"', '12"', '14"', '16"']
+      tipo: lista_abierta
+      valores_estandar: ['1/4"', '3/8"', '1/2"', '3/4"', '1"', '1-1/4"', '1-1/2"', '2"', '3"', '4"', '6"']
     material:
       requerido: true
       tipo: lista_abierta
-      valores_estandar: [INOX 304, INOX 316, ACERO CARBONO A105, ACERO CARBONO A234, BRONCE, PVC, CPVC, HDPE, GALVANIZADO]
+      valores_estandar: [INOX 304, INOX 316, ACERO CARBONO, GALVANIZADO, BRONCE, PVC, CPVC, HDPE, POLIPROPILENO]
     conexion:
       requerido: true
       tipo: lista_abierta
-      valores_estandar: [NPT, BSP, SW, BW, FLANGE, RANURADO, PEGAR]
+      valores_estandar: [ROSCADA NPT, ROSCADA BSP, SOLDADA SW, SOLDADA BW, BRIDADA, RANURADA, CEMENTAR]
     rating:
       requerido: false
       tipo: lista_abierta
-      valores_estandar: [150#, 300#, 600#, 800#, 3000#, 6000#, SCH10, SCH40, SCH80, STD, XS]
+      valores_estandar: [150#, 300#, 600#, 3000#, SCH40, SCH80]
 
-EPP:
-  formato: "{subtipo} {descripcion} {talla} {color} {certificacion}"
-  campos:
-    subtipo:
-      requerido: true
-      tipo: lista_cerrada
-      valores_estandar: [CASCO, LENTE, GUANTE, ZAPATO, PROTECTOR AUDITIVO, ARNES, RESPIRADOR, ROPA, CHALECO GEOLOGO, MASCARILLA]
-    descripcion:
-      requerido: true
-      tipo: texto_libre
-      ejemplo: SEGURIDAD, CABRITILLA, MULTIPROPOSITO, ANTIPARRA, FONOAUDIBLE
-    talla:
-      requerido: false
-      tipo: lista_cerrada
-      valores_estandar: [XS, S, M, L, XL, XXL, XXXL, ESTANDAR, UNICA, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45]
-    color:
-      requerido: false
-      tipo: lista_abierta
-      valores_estandar: [BLANCO, NEGRO, AZUL, ROJO, AMARILLO, NARANJO, VERDE, GRIS, TRANSPARENTE, FLUOR]
-    certificacion:
-      requerido: false
-      tipo: texto_libre
-      ejemplo: ANSI, NIOSH, CSA
-
+# -----------------------------------------------------------------------------
+# ASEO - Productos de Limpieza e Higiene
+# -----------------------------------------------------------------------------
 ASEO:
-  formato: "{categoria} {producto} {aroma} {formato} {marca}"
+  formato: "{producto} {formato}"
   campos:
-    categoria:
-      requerido: true
-      tipo: lista_cerrada
-      valores_estandar: [LIMPIEZA, HIGIENE, BASURA, INDUSTRIAL]
     producto:
       requerido: true
-      tipo: texto_libre
-      ejemplo: CLORO, DETERGENTE, JABON, PAPEL HIGIENICO, TOALLA NOVA, BOLSA BASURA
-    aroma:
-      requerido: false
       tipo: lista_abierta
-      valores_estandar: [LAVANDA, LIMON, MANZANA, NEUTRO, FLORAL]
+      valores_estandar: [CLORO, DETERGENTE, LAVALOZA, LIMPIADOR MULTIUSO, DESENGRASANTE, DESINFECTANTE, JABON LIQUIDO, PAPEL HIGIENICO, TOALLA PAPEL, BOLSA BASURA, GUANTE DOMESTICO, ESCOBA, TRAPERO, ESPONJA, LYSOFORM]
     formato:
       requerido: true
       tipo: lista_abierta
-      valores_estandar: [1L, 5L, 20L, 5KG, 25KG, PACK 6, ROLLO, CAJA]
-    marca:
-      requerido: false
-      tipo: texto_libre
-      valores_estandar: [GENERICO, ELITE, CONFORT, TORK, VIRUTEX]
+      valores_estandar: [1L, 5L, 20L, BIDON, ROLLO, PAQUETE, CAJA 6UN, CAJA 12UN, SACO, SPRAY]
 
+# -----------------------------------------------------------------------------
+# OFICINA - Artículos de Escritorio
+# -----------------------------------------------------------------------------
 OFICINA:
-  formato: "{categoria} {producto} {detalle} {unidad} {marca}"
+  formato: "{producto} {detalle}"
   campos:
-    categoria:
-      requerido: true
-      tipo: lista_cerrada
-      valores_estandar: [ESCRITORIO, PAPELERIA, ARCHIVO, MUEBLE]
     producto:
       requerido: true
-      tipo: texto_libre
-      ejemplo: LAPIZ PASTA, CUADERNO, CORCHETERA, PERFORADORA, CINTA ADHESIVA
+      tipo: lista_abierta
+      valores_estandar: [LAPIZ PASTA, LAPIZ GRAFITO, DESTACADOR, CORRECTOR, CUADERNO, BLOCK, CARPETA, ARCHIVADOR, CORCHETERA, PERFORADORA, TIJERA, CINTA ADHESIVA, CLIPS, CORCHETES, RESMA PAPEL, SOBRE, PLUMON, GOMA]
     detalle:
       requerido: false
       tipo: texto_libre
-      ejemplo: AZUL, ROJO, 100 HOJAS, CARTA, OFICIO
-    unidad:
-      requerido: true
-      tipo: lista_cerrada
-      valores_estandar: [UNIDAD, CAJA, RESMA, PAQUETE, JUEGO]
-    marca:
-      requerido: false
-      tipo: texto_libre
+      ejemplo: "AZUL, NEGRO, 100 HOJAS, CARTA, OFICIO, LOMO ANCHO"
 
+# -----------------------------------------------------------------------------
+# COMBUSTIBLE - Combustibles y Lubricantes
+# -----------------------------------------------------------------------------
 COMBUSTIBLE:
-  formato: "{tipo} {viscosidad} {formato} {marca}"
+  formato: "{tipo} {grado} {formato}"
   campos:
     tipo:
       requerido: true
       tipo: lista_cerrada
-      valores_estandar: [PETROLEO, BENCINA, ACEITE MOTOR, ACEITE HIDRAULICO, GRASA, REFRIGERANTE, ADITIVO]
-    viscosidad:
+      valores_estandar: [PETROLEO DIESEL, BENCINA, ACEITE MOTOR, ACEITE HIDRAULICO, ACEITE TRANSMISION, GRASA, REFRIGERANTE, ADITIVO]
+    grado:
       requerido: false
       tipo: lista_abierta
-      valores_estandar: [15W40, 10W40, 5W30, 80W90, ISO 68, EP2, 93 OCT, 95 OCT, 97 OCT, DIESEL]
+      valores_estandar: [93 OCT, 95 OCT, 97 OCT, 15W40, 10W40, 5W30, 80W90, ISO 32, ISO 46, ISO 68, EP2, EP0]
     formato:
       requerido: true
       tipo: lista_abierta
-      valores_estandar: [BALDE 19L, TAMBOR 208L, LITRO, GALON 3.78L, CARTUCHO, IBC 1000L]
-    marca:
-      requerido: false
-      tipo: lista_abierta
-      valores_estandar: [SHELL, MOBIL, COPEC, CHEVRON, TOTAL, CASTROL]
+      valores_estandar: [LITRO, GALON, BALDE 19L, TAMBOR 208L, IBC 1000L, CARTUCHO 400G]
 
+# -----------------------------------------------------------------------------
+# CONSTRUCCION - Materiales de Construcción y Estructuras
+# -----------------------------------------------------------------------------
+# Incluye: materiales básicos, estructuras metálicas, perfiles
 CONSTRUCCION:
-  formato: "{categoria} {material} {dimensiones} {unidad}"
+  formato: "{material} {dimension}"
   campos:
-    categoria:
-      requerido: true
-      tipo: lista_cerrada
-      valores_estandar: [ESTRUCTURAL, ARIDOS, TERMINACIONES, FIJACIONES, MADERAS, CEMENTOS]
     material:
       requerido: true
-      tipo: texto_libre
-      ejemplo: FIERRO, PERFIL CUADRADO, PLANCHA ZINC, CEMENTO, ARENA, CLAVO
-    dimensiones:
+      tipo: lista_abierta
+      valores_estandar: [FIERRO ESTRIADO, PERFIL CUADRADO, PERFIL RECTANGULAR, ANGULO, PLANCHA ACERO, PLANCHA ZINC, MALLA ACMA, CEMENTO, ARENA, GRAVILLA, RIPIO, MADERA PINO, TERCIADO, OSB, YESO CARTON, CONSTANERA, VIGA H, VIGA I, PERFIL C, PERFIL U, PLATINA, BARRA REDONDA, BARRA CUADRADA, TUBO ESTRUCTURAL]
+    dimension:
       requerido: true
       tipo: texto_libre
-      ejemplo: 2X2X6M, 10MM, 25KG, 6M
-    unidad:
-      requerido: true
-      tipo: lista_cerrada
-      valores_estandar: [TIRA, UNIDAD, SACO, M3, KG, PLANCHA, METRO]
+      ejemplo: "8MM, 50X50X3MM, 100X50X15X3MM 6M, 25KG, 4X8 PIES"
 
+# -----------------------------------------------------------------------------
+# VEHICULOS - Repuestos Automotrices
+# -----------------------------------------------------------------------------
 VEHICULOS:
-  formato: "{sistema} {repuesto} {modelo_vehiculo} {marca_repuesto}"
+  formato: "{vehiculo} {repuesto}"
   campos:
-    sistema:
+    vehiculo:
       requerido: true
-      tipo: lista_cerrada
-      valores_estandar: [MOTOR, FRENOS, SUSPENSION, ELECTRICO, CARROCERIA, FILTROS, NEUMATICOS]
+      tipo: texto_libre
+      ejemplo: "HILUX 2.4, L200 2.5, NP300, HINO 500, VOLVO FH"
     repuesto:
       requerido: true
-      tipo: texto_libre
-      ejemplo: PASTILLA FRENO, AMORTIGUADOR, ESPEJO, OPTICO, FILTRO ACEITE
-    modelo_vehiculo:
-      requerido: true
-      tipo: texto_libre
-      ejemplo: TOYOTA HILUX, MITSUBISHI L200, NISSAN NP300, CAMION VOLVO
-    marca_repuesto:
-      requerido: false
-      tipo: texto_libre
-      valores_estandar: [ORIGINAL, ALTERNATIVO, BOSCH, MANN]
+      tipo: lista_abierta
+      valores_estandar: [FILTRO ACEITE, FILTRO COMBUSTIBLE, FILTRO AIRE, PASTILLA FRENO, DISCO FRENO, AMORTIGUADOR, CORREA DISTRIBUCION, BOMBA AGUA, ALTERNADOR, PARTIDA, BATERIA, NEUMATICO, ESPEJO, OPTICO, PARABRISAS, FOCO TRASERO]
 
+# -----------------------------------------------------------------------------
+# ELECTRICIDAD - Materiales Eléctricos
+# -----------------------------------------------------------------------------
+# FILOSOFÍA: Para CONDUCIR y PROTEGER energía. NO incluye instrumentación.
 ELECTRICIDAD:
-  formato: "{categoria} {tipo} {especificacion} {marca}"
+  formato: "{producto} {especificacion}"
   campos:
-    categoria:
+    producto:
       requerido: true
-      tipo: lista_cerrada
-      valores_estandar: [CONDUCTOR, PROTECCION, ILUMINACION, FERRETERIA ELECTRICA, INSTRUMENTACION]
-    tipo:
-      requerido: true
-      tipo: texto_libre
-      ejemplo: CABLE THHN, AUTOMATICO, ENCHUFE, INTERRUPTOR, FOCO LED
+      tipo: lista_abierta
+      valores_estandar: [CABLE THHN, CABLE CONCENTRICO, CABLE SOLDADOR, AUTOMATICO, DIFERENCIAL, CONTACTOR, RELE TERMICO, ENCHUFE, INTERRUPTOR, TOMACORRIENTE, CANALETA, PRENSAESTOPA, CINTA AISLADORA, FOCO LED, TUBO LED, REFLECTOR LED, GUARDAMOTOR, EXTENSION ELECTRICA]
     especificacion:
       requerido: true
       tipo: texto_libre
-      ejemplo: 2.5MM, 10A, 16A, 220V, 50W, 3X1.5
-    marca:
-      requerido: false
-      tipo: lista_abierta
-      valores_estandar: [LEGRAND, SCHNEIDER, BTICINO, PHILIPS, 3M]
+      ejemplo: "2.5MM2, 4MM2, 10A, 16A, 25A, 220V, 50W, 100W"
 
-EQUIPOS:
-  formato: "{tipo} {modelo} {capacidad} {marca}"
+# -----------------------------------------------------------------------------
+# INSTRUMENTACION - Instrumentos de Medición y Control
+# -----------------------------------------------------------------------------
+# FILOSOFÍA: SEPARADO de ELECTRICIDAD. Instrumentación es para MEDIR variables.
+INSTRUMENTACION:
+  formato: "{tipo} {variable} {rango}"
   campos:
     tipo:
       requerido: true
       tipo: lista_abierta
-      valores_estandar: [GENERADOR, COMPRESOR, SOLDADORA, TALADRO PEDESTAL, BETONERA, GRUA, CAMIONETA]
-    modelo:
+      valores_estandar: [MANOMETRO, TERMOMETRO, FLUJOMETRO, SENSOR, TRANSMISOR, INDICADOR, DETECTOR, ANALIZADOR, CONTROLADOR, PRESOSTATO, TERMOSTATO, TESTER, MULTIMETRO, MEDIDOR GAS]
+    variable:
+      requerido: true
+      tipo: lista_abierta
+      valores_estandar: [PRESION, TEMPERATURA, FLUJO, NIVEL, GAS, VOLTAJE, CORRIENTE, PH, CONDUCTIVIDAD, OXIGENO, HUMEDAD, CLORO]
+    rango:
       requerido: false
       tipo: texto_libre
+      ejemplo: "0-10 BAR, 0-100 PSI, 0-200°C, 0-20 SCFM, 0-1000V"
+
+# -----------------------------------------------------------------------------
+# EQUIPOS - Maquinaria y Equipos Mayores
+# -----------------------------------------------------------------------------
+# FILOSOFÍA: Aquí SÍ importa la marca porque define repuestos y servicio técnico.
+EQUIPOS:
+  formato: "{tipo} {marca} {capacidad}"
+  campos:
+    tipo:
+      requerido: true
+      tipo: lista_abierta
+      valores_estandar: [GENERADOR, COMPRESOR, SOLDADORA, ESMERIL ANGULAR, TALADRO, ROTOMARTILLO, SIERRA CIRCULAR, HIDROLAVADORA, VIBRADOR CONCRETO, PLACA COMPACTADORA, BETONERA, MOTOBOMBA, TRONZADORA]
+    marca:
+      requerido: true
+      tipo: texto_libre
+      ejemplo: "HONDA, CATERPILLAR, LINCOLN, MAKITA, DEWALT, BOSCH"
     capacidad:
       requerido: false
       tipo: texto_libre
-      ejemplo: 50KVA, 100L, 250A, 1HP
-    marca:
-      requerido: true
-      tipo: texto_libre
+      ejemplo: "5KVA, 100L, 250A, 7 PULGADAS, 1HP"
 
+# -----------------------------------------------------------------------------
+# HERRAMIENTAS - Herramientas Manuales y Abrasivos
+# -----------------------------------------------------------------------------
+# Incluye: herramientas manuales, discos de corte, lijas
 HERRAMIENTAS:
-  formato: "{tipo} {nombre} {medida} {marca}"
+  formato: "{nombre} {medida}"
   campos:
-    tipo:
-      requerido: true
-      tipo: lista_cerrada
-      valores_estandar: [MANUAL, ELECTRICA, NEUMATICA, MEDICION, CORTE]
     nombre:
       requerido: true
-      tipo: texto_libre
-      ejemplo: ALICATE, DESTORNILLADOR, LLAVE PUNTA CORONA, SIERRA CIRCULAR
+      tipo: lista_abierta
+      valores_estandar: [ALICATE, ALICATE PRESION, DESTORNILLADOR, LLAVE PUNTA CORONA, LLAVE FRANCESA, LLAVE STILSON, MARTILLO, COMBO, CINCEL, FLEXOMETRO, NIVEL, ESCUADRA, SIERRA, ARCO SIERRA, TARRAJA, GATA HIDRAULICA, DISCO CORTE, DISCO DESBASTE, DISCO FLAP, DISCO DIAMANTE, LIJA, PIEDRA ESMERIL, COPA WIRE, ESCOBILLA CIRCULAR, BROCHA, RODILLO, ESPATULA]
     medida:
       requerido: false
       tipo: texto_libre
-      ejemplo: 8", 1/2", 10MM, SET
-    marca:
-      requerido: false
-      tipo: lista_abierta
-      valores_estandar: [STANLEY, MAKITA, DEWALT, MILWAUKEE, BAHCO, SATA]
+      ejemplo: "8 PULGADAS, 1/2, 10MM, 5M, SET 12PCS, 4-1/2X1/16X7/8, GRANO 80"
 
+# -----------------------------------------------------------------------------
+# COMPUTACIONAL - Equipos y Accesorios de Computación
+# -----------------------------------------------------------------------------
 COMPUTACIONAL:
-  formato: "{categoria} {producto} {especificacion} {marca}"
+  formato: "{producto} {especificacion} {marca}"
   campos:
-    categoria:
-      requerido: true
-      tipo: lista_cerrada
-      valores_estandar: [NOTEBOOK, MONITOR, IMPRESORA, ACCESORIO, COMPONENTE, PERIFERICO, RED, SOFTWARE]
     producto:
       requerido: true
-      tipo: texto_libre
-      ejemplo: PC ESCRITORIO, LAPTOP, MOUSE, TECLADO, DISCO DURO, MEMORIA RAM, SWITCH, ROUTER
+      tipo: lista_abierta
+      valores_estandar: [NOTEBOOK, PC ESCRITORIO, MONITOR, IMPRESORA, MOUSE, TECLADO, DISCO DURO, MEMORIA RAM, PENDRIVE, SWITCH RED, ROUTER, CABLE RED, TONER, CARGADOR, SCANNER]
     especificacion:
       requerido: true
       tipo: texto_libre
-      ejemplo: CORE I7 16GB, 27 PULGADAS, SSD 500GB, INALAMBRICO, 8 PUERTOS
+      ejemplo: "I5 8GB 256SSD, 24 PULGADAS, 1TB, 16GB, 8 PUERTOS"
     marca:
       requerido: false
       tipo: lista_abierta
-      valores_estandar: [HP, DELL, LENOVO, ASUS, LOGITECH, SAMSUNG, LG, KINGSTON, SEAGATE, CISCO, MICROSOFT]
+      valores_estandar: [HP, DELL, LENOVO, ASUS, LOGITECH, SAMSUNG, LG, KINGSTON, SEAGATE, TPLINK, EPSON, BROTHER]
+
+# -----------------------------------------------------------------------------
+# SOLDADURA - Equipos y Consumibles de Soldadura
+# -----------------------------------------------------------------------------
+SOLDADURA:
+  formato: "{producto} {especificacion}"
+  campos:
+    producto:
+      requerido: true
+      tipo: lista_abierta
+      valores_estandar: [ELECTRODO, ALAMBRE MIG, VARILLA TIG, APORTE TIG, FUNDENTE, FLUX, ANTORCHA, REGULADOR, TOBERA, BOQUILLA, PINZA MASA, PORTA ELECTRODO, CARETA SOLDAR, VIDRIO SOLDAR]
+    especificacion:
+      requerido: true
+      tipo: texto_libre
+      ejemplo: "E6011 3.2MM, ER70S-6 1.0MM, INOX 316L 2.4MM, N° 11"
+
+# -----------------------------------------------------------------------------
+# PINTURA - Pinturas, Diluyentes y Accesorios
+# -----------------------------------------------------------------------------
+# Incluye: pinturas, diluyentes, brochas, rodillos, masillas
+PINTURA:
+  formato: "{producto} {color} {formato}"
+  campos:
+    producto:
+      requerido: true
+      tipo: lista_abierta
+      valores_estandar: [ESMALTE SINTETICO, LATEX, ANTICORROSIVO, PRIMER, EPOXICO, ZINCROMATO, PINTURA SPRAY, DILUYENTE, THINNER, AGUARRAS, MASILLA, CINTA MASKING, PISTOLA PINTAR, BANDEJA PINTURA]
+    color:
+      requerido: false
+      tipo: lista_abierta
+      valores_estandar: [BLANCO, NEGRO, GRIS, ROJO, AMARILLO, AZUL, VERDE, NARANJO]
+      ejemplo: "Solo para pinturas, no para diluyentes ni accesorios"
+    formato:
+      requerido: true
+      tipo: texto_libre
+      ejemplo: "1/4GL, 1GL, 5GL, 1L, 5L, 20L, SPRAY 400ML, 2 PULGADAS, 7 PULGADAS"
+
+# -----------------------------------------------------------------------------
+# SEGURIDAD_INDUSTRIAL - Señalética, Bloqueos y Emergencia
+# -----------------------------------------------------------------------------
+SEGURIDAD_INDUSTRIAL:
+  formato: "{producto} {especificacion}"
+  campos:
+    producto:
+      requerido: true
+      tipo: lista_abierta
+      valores_estandar: [SEÑALETICA, LETRERO, CONO, BARRERA, CINTA DEMARCATORIA, CINTA PELIGRO, CANDADO BLOQUEO, PINZA BLOQUEO, TARJETA BLOQUEO, EXTINTOR, MANTA IGNIFUGA, DUCHA LAVAOJOS, ALCOTEST]
+    especificacion:
+      requerido: false
+      tipo: texto_libre
+      ejemplo: "PROHIBIDO FUMAR, USO EPP OBLIGATORIO, 50MM, 6KG ABC"
+
+# -----------------------------------------------------------------------------
+# FERRETERIA - Pernos, Tuercas, Golillas, Fijaciones
+# -----------------------------------------------------------------------------
+FERRETERIA:
+  formato: "{tipo} {medida} {material}"
+  campos:
+    tipo:
+      requerido: true
+      tipo: lista_abierta
+      valores_estandar: [PERNO, TUERCA, GOLILLA, VOLANDA, CLAVO, TORNILLO, AUTORROSCANTE, PERNO ANCLAJE, ESPARRAGO, CHAVETA, PRISIONERO, REMACHE, INSERTO, PERNO EN U, ALDABA]
+    medida:
+      requerido: true
+      tipo: texto_libre
+      ejemplo: "1/4X1, 3/8X2, M8X25, M10X40, 2 PULGADAS"
+    material:
+      requerido: false
+      tipo: lista_abierta
+      valores_estandar: [ACERO, INOX, GALVANIZADO, BRONCE, ZINC]
+
+# -----------------------------------------------------------------------------
+# QUIMICOS - Gases, Catalizadores, Selladores, Adhesivos
+# -----------------------------------------------------------------------------
+QUIMICOS:
+  formato: "{producto} {presentacion}"
+  campos:
+    producto:
+      requerido: true
+      tipo: lista_abierta
+      valores_estandar: [GAS ARGON, GAS CO2, GAS MEZCLA, GAS OXIGENO, GAS ACETILENO, GAS PROPANO, CATALIZADOR, RESINA, ENDURECEDOR, SELLADOR, SILICONA, ADHESIVO, LUBRICANTE, REFRIGERANTE, ANTICONGELANTE]
+    presentacion:
+      requerido: true
+      tipo: texto_libre
+      ejemplo: "CILINDRO 10M3, CARTUCHO 300ML, 1L, 5L, 20KG"
+
+# -----------------------------------------------------------------------------
+# CONSUMIBLES - Consumo General, Cafetería, Embalaje
+# -----------------------------------------------------------------------------
+# Incluye: baterías, bloqueador, café, agua, stretch film, etc.
+CONSUMIBLES:
+  formato: "{producto} {presentacion}"
+  campos:
+    producto:
+      requerido: true
+      tipo: lista_abierta
+      valores_estandar: [PILAS, BATERIAS, BLOQUEADOR SOLAR, BOTIQUIN, MEDICAMENTO, REPELENTE, GEL ANTIBACTERIAL, ALCOHOL GEL, CAFE, AZUCAR, TE, NESCAFE, LECHE, AGUA, GALLETAS, MILO, STRETCH FILM, CINTA EMBALAJE, ZUNCHO, ETIQUETA, VASO DESECHABLE]
+    presentacion:
+      requerido: true
+      tipo: texto_libre
+      ejemplo: "PACK 4, 1KG, 420G, BIDON 20L, BOTELLA 1.5L, 50CM"
+
+# -----------------------------------------------------------------------------
+# IZAJE - Elementos de Izaje y Amarre
+# -----------------------------------------------------------------------------
+# FILOSOFÍA: Crítico por seguridad - capacidad de carga es esencial
+IZAJE:
+  formato: "{producto} {capacidad} {largo}"
+  campos:
+    producto:
+      requerido: true
+      tipo: lista_abierta
+      valores_estandar: [ESLINGA PLANA, ESLINGA REDONDA, ESTROBO, GRILLETE, GANCHO, CADENA, TENSOR, TECLE, CARRO PORTACADENA, CABO DE VIDA, LINEA DE VIDA]
+    capacidad:
+      requerido: true
+      tipo: texto_libre
+      ejemplo: "1TON, 2TON, 5TON, 3/4"
+    largo:
+      requerido: false
+      tipo: texto_libre
+      ejemplo: "3M, 6M, 10M"
+
+# =============================================================================
+# SERVICIOS - Servicios Contratados (DESHABILITADO)
+# =============================================================================
+# NOTA: Categoría comentada porque no se utilizará por ahora.
+# Mantener para referencia futura si se requiere registrar costos de servicios.
+# -----------------------------------------------------------------------------
+# SERVICIOS:
+#   formato: "{tipo_servicio} {descripcion}"
+#   campos:
+#     tipo_servicio:
+#       requerido: true
+#       tipo: lista_abierta
+#       valores_estandar: [TRANSPORTE, ARRIENDO, MANTENCION, REPARACION, CALIBRACION, CERTIFICACION, CAPACITACION, CONSULTORIA, INSTALACION]
+#     descripcion:
+#       requerido: true
+#       tipo: texto_libre
+#       ejemplo: "RAMPLA IBC, GRUA HORQUILLA, COMPRESOR, VEHICULO"

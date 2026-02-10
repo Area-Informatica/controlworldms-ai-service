@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import hse, articulo
+from app.routers import hse, chatbot_estandarizacion_articulos
 # from app.routers import rrhh  <-- Descomentarás esto cuando crees el módulo de RRHH
 
 # Cargar variables de entorno
@@ -40,7 +40,7 @@ app.add_middleware(
 # 3. Registro de Rutas (Routers)
 # Aquí le dices a FastAPI: "Todo lo que esté en hse.py, ponlo bajo la url /hse"
 app.include_router(hse.router, prefix="/hse", tags=["HSE"])
-app.include_router(articulo.router, prefix="/articulo", tags=["Articulos"])
+app.include_router(chatbot_estandarizacion_articulos.router, prefix="/chatbot/estandarizacion-articulos", tags=["Chatbot Estandarización Artículos"])
 
 # app.include_router(rrhh.router, prefix="/rrhh", tags=["RRHH"]) <-- Futuro módulo
 

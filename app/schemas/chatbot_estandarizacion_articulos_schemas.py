@@ -42,5 +42,6 @@ class ArticuloResponse(BaseModel):
     requiere_mas_info: bool = Field(default=False, description="Si necesita más información del usuario")
     pregunta_siguiente: Optional[str] = Field(default=None, description="Pregunta a hacer si falta info")
     opciones_sugeridas: List[str] = Field(default=[], description="Lista de opciones válidas para facilitar la selección al usuario")
+    permitir_input_abierto: bool = Field(default=True, description="Si true, el usuario puede ingresar texto libre además de las opciones")
     listo_para_crear: bool = Field(default=False, description="Si el artículo está listo para crear en Defontana")
     accion_sugerida: Literal["usar_existente", "crear_nuevo", "preguntar"] = "preguntar"

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from app.schemas.articulo_schemas import ArticuloRequest, ArticuloResponse
-from app.agents.articulo_agent import get_articulo_agent
+from app.schemas.chatbot_estandarizacion_articulos_schemas import ArticuloRequest, ArticuloResponse
+from app.agents.chatbot_estandarizacion_articulos_agent import get_estandarizacion_agent
 from langchain_core.messages import HumanMessage, AIMessage
 from typing import List
 import uuid
@@ -17,7 +17,7 @@ async def estandarizar_articulo(request: ArticuloRequest):
     Recibe descripción en lenguaje natural y retorna nombre estandarizado.
     """
     try:
-        agent = get_articulo_agent()
+        agent = get_estandarizacion_agent()
         
         # Construir mensajes del historial si existe
         messages = []
@@ -41,6 +41,7 @@ async def estandarizar_articulo(request: ArticuloRequest):
         listo_para_crear = False
         action = "preguntar"
         opciones_sugeridas = []
+        permitir_input_abierto = True
 
         # Buscar si se llamó a herramientas clave en los mensajes recientes
         # Iteramos al revés para encontrar la última acción relevante
@@ -52,7 +53,7 @@ async def estandarizar_articulo(request: ArticuloRequest):
                     
                     if name == 'finalizar_estandarizacion':
                         try:
-                            from app.schemas.articulo_schemas import ArticuloIdentificado
+                            from app.schemas.chatbot_estandarizacion_articulos_schemas import ArticuloIdentificado
                             articulo_identificado = ArticuloIdentificado(
                                 tipo=args.get('tipo'),
                                 nombre_estandarizado=args.get('nombre_estandarizado'),
@@ -66,6 +67,7 @@ async def estandarizar_articulo(request: ArticuloRequest):
                             
                     elif name == 'preguntar_con_opciones':
                         opciones_sugeridas = args.get('opciones', [])
+                        permitir_input_abierto = args.get('permitir_otro_valor', True)
                 
                 # Si encontramos alguna acción relevante, nos detenemos (prioridad a finalizar)
                 if listo_para_crear or opciones_sugeridas:
@@ -80,14 +82,16 @@ async def estandarizar_articulo(request: ArticuloRequest):
             log_entry = {
                 "timestamp": datetime.now().isoformat(),
                 "usuario": request.mensaje,
+                "contexto_previo": request.contexto_conversacion,
                 "ia_respuesta": last_message.content,
                 "opciones_mostradas": opciones_sugeridas,
+                "permitir_input_abierto": permitir_input_abierto,
                 "accion_sugerida": action,
                 "estado_final": "listo" if listo_para_crear else "en_proceso"
             }
             
-            # Guardar en logs/historial_chat_articulos.jsonl
-            log_path = Path("logs/historial_chat_articulos.jsonl")
+            # Guardar en logs/historial_chatbot_estandarizacion_articulos.jsonl
+            log_path = Path("logs/historial_chatbot_estandarizacion_articulos.jsonl")
             
             # Asegurar que el directorio existe (seguridad extra)
             log_path.parent.mkdir(exist_ok=True)
@@ -105,7 +109,8 @@ async def estandarizar_articulo(request: ArticuloRequest):
             requiere_mas_info=not listo_para_crear,
             listo_para_crear=listo_para_crear,
             accion_sugerida=action,
-            opciones_sugeridas=opciones_sugeridas
+            opciones_sugeridas=opciones_sugeridas,
+            permitir_input_abierto=permitir_input_abierto
         )
         
     except Exception as e:
@@ -119,7 +124,7 @@ async def validar_duplicado(nombre: str):
     Verifica si un nombre de artículo ya existe en Defontana.
     """
     try:
-        from app.agents.articulo_agent import buscar_articulos_defontana
+        from app.agents.chatbot_estandarizacion_articulos_agent import buscar_articulos_defontana
         
         resultados = buscar_articulos_defontana.invoke(nombre)
         
