@@ -6,12 +6,12 @@ from langchain.tools import tool
 from typing import List, Dict, Any
 import httpx
 
-from app.services.chatbot_estandarizacion_articulos.categorias_service import (
+from app.services.chatbot_solicitud_articulos.categorias_service import (
     obtener_categorias,
     obtener_reglas_categoria,
     inferir_categoria as _inferir_categoria,
 )
-from app.services.chatbot_estandarizacion_articulos.normalizacion_utils import normalizar_valor
+from app.services.chatbot_solicitud_articulos.normalizacion_utils import normalizar_valor
 
 
 @tool

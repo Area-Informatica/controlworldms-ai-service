@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from app.schemas.chatbot_estandarizacion_articulos_schemas import ArticuloRequest, ArticuloResponse
-from app.agents.chatbot_estandarizacion_articulos_agent import get_estandarizacion_agent
+from app.schemas.chatbot_solicitud_articulos_schemas import ArticuloRequest, ArticuloResponse
+from app.agents.chatbot_solicitud_articulos_agent import get_estandarizacion_agent
 from langchain_core.messages import HumanMessage, AIMessage
 from typing import List
 import uuid
@@ -37,6 +37,42 @@ async def estandarizar_articulo(request: ArticuloRequest):
         # Extraer respuesta estructurada
         last_message = result["messages"][-1]
         
+        # Corrección para cuando Claude retorna una lista de bloques (text + tool_use)
+        response_text = ""
+        if isinstance(last_message.content, list):
+            for block in last_message.content:
+                if isinstance(block, dict) and block.get("type") == "text":
+                    response_text += block.get("text", "")
+        else:
+            response_text = str(last_message.content)
+
+        # Fallback para mensajes vacíos (ej. solo tool calls)
+        if not response_text or not response_text.strip():
+            # Si hay tool calls en el último mensaje
+            if hasattr(last_message, 'tool_calls') and last_message.tool_calls:
+                 # Check if the tool call is preguntar_con_opciones specificially to give a better message
+                is_question = any(tc.get('name') == 'preguntar_con_opciones' for tc in last_message.tool_calls)
+                if is_question:
+                     # This usually means options are provided but no text. 
+                     # We can default to a generic prompt since the UI will show options.
+                     response_text = "Por favor selecciona una opción:"
+                else:
+                    response_text = "Procesando información..."
+            else:
+                # If no content and no tool calls in last message, check previous message for tools
+                # Sometimes the chain ends on a ToolMessage, not AIMessage.
+                found_tool_output = False
+                if len(result["messages"]) >= 2:
+                    second_last = result["messages"][-2]
+                    # If the second to last was a tool call, and last message is empty, 
+                    # maybe the model stopped unexpectedly.
+                    if hasattr(second_last, 'tool_calls') and second_last.tool_calls:
+                         response_text = "Evaluando respuesta..."
+                         found_tool_output = True
+                
+                if not found_tool_output:
+                     response_text = "..."
+
         articulo_identificado = None
         listo_para_crear = False
         action = "preguntar"
@@ -53,7 +89,7 @@ async def estandarizar_articulo(request: ArticuloRequest):
                     
                     if name == 'finalizar_estandarizacion':
                         try:
-                            from app.schemas.chatbot_estandarizacion_articulos_schemas import ArticuloIdentificado
+                            from app.schemas.chatbot_solicitud_articulos_schemas import ArticuloIdentificado
                             articulo_identificado = ArticuloIdentificado(
                                 tipo=args.get('tipo'),
                                 nombre_estandarizado=args.get('nombre_estandarizado'),
@@ -83,15 +119,15 @@ async def estandarizar_articulo(request: ArticuloRequest):
                 "timestamp": datetime.now().isoformat(),
                 "usuario": request.mensaje,
                 "contexto_previo": request.contexto_conversacion,
-                "ia_respuesta": last_message.content,
+                "ia_respuesta": response_text,
                 "opciones_mostradas": opciones_sugeridas,
                 "permitir_input_abierto": permitir_input_abierto,
                 "accion_sugerida": action,
                 "estado_final": "listo" if listo_para_crear else "en_proceso"
             }
             
-            # Guardar en logs/historial_chatbot_estandarizacion_articulos.jsonl
-            log_path = Path("logs/historial_chatbot_estandarizacion_articulos.jsonl")
+            # Guardar en logs/historial_chatbot_solicitud_articulos.jsonl
+            log_path = Path("logs/historial_chatbot_solicitud_articulos.jsonl")
             
             # Asegurar que el directorio existe (seguridad extra)
             log_path.parent.mkdir(exist_ok=True)
@@ -104,7 +140,7 @@ async def estandarizar_articulo(request: ArticuloRequest):
         # ----------------
 
         return ArticuloResponse(
-            mensaje=last_message.content,
+            mensaje=response_text,
             articulo_identificado=articulo_identificado,
             requiere_mas_info=not listo_para_crear,
             listo_para_crear=listo_para_crear,
@@ -124,7 +160,7 @@ async def validar_duplicado(nombre: str):
     Verifica si un nombre de artículo ya existe en Defontana.
     """
     try:
-        from app.agents.chatbot_estandarizacion_articulos_agent import buscar_articulos_defontana
+        from app.tools.chatbot_articulo_tools import buscar_articulos_defontana
         
         resultados = buscar_articulos_defontana.invoke(nombre)
         

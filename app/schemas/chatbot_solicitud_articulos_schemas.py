@@ -17,7 +17,7 @@ class TipoArticulo(str, Enum):
 
 class ArticuloRequest(BaseModel):
     """Request del usuario en lenguaje natural"""
-    mensaje: str = Field(description="Descripción del artículo que necesita el usuario")
+    mensaje: str = Field(description="Descripción del artículo que necesita el usuario", min_length=1)
     contexto_conversacion: Optional[List[dict]] = Field(default=None, description="Historial de la conversación")
 
 class ArticuloIdentificado(BaseModel):

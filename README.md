@@ -181,6 +181,29 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
 
 ---
 
+
+## 🧪 Testing y Simulación
+
+El proyecto incluye un sistema de **Simulación Multi-Agente** para probar el Chatbot de Estandarización de forma automatizada. Este sistema utiliza un segundo agente (User Simulator) que toma diferentes "personalidades" (usuario confundido, experto, impaciente) para conversar con el chatbot y verificar que el flujo se cumple.
+
+### Ejecutar Simulación (User Simulator)
+
+Para ejecutar las simulaciones de conversación usuario-chatbot:
+
+```bash
+# Ejecutar todas las pruebas de simulación activas
+python tests/test_multi_agent_simulation.py
+```
+
+El script `tests/test_multi_agent_simulation.py` orquesta la conversación entre:
+1.  **Chatbot de Estandarización:** El agente real que se está desarrollando (Sonnet).
+2.  **UserSimulator:** Un agente ligero (Haiku) que simula ser un humano con objetivos específicos (ej: pedir EPPs, WOG, Electricidad).
+
+Las pruebas incluyen diferentes perfiles de usuario:
+-   **Standard:** Usuario cooperativo.
+-   **Confused:** Usuario que usa términos informales o no sabe datos técnicos.
+-   **Expert:** Usuario que entrega toda la información de una sola vez.
+
 ## 🔌 Integración con ControlWorldMS (Laravel)
 
 ### Configuración en Laravel

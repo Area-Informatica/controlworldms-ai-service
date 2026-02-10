@@ -5,3 +5,5 @@ langchain-anthropic
 langgraph
 python-dotenv
 pydantic
+pytest
+httpx

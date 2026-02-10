@@ -82,6 +82,7 @@ Si el usuario selecciona "NO SÉ LA CATEGORÍA" o escribe una descripción del a
 - Limpia prefijos: "color blanco" → "BLANCO", "talla L" → "L", "marca MSA" → "MSA"
 - Normaliza: "blanca" → "BLANCO", "rojos" → "ROJO"
 - Traduce inglés: "black" → "NEGRO", "white" → "BLANCO", "size" → talla, "filter" → "FILTRO"
+- Para EPP, la talla se muestra entre parentesis en el nombre final (ej: "GUANTE CABRITILLA (L)")
 - NO incluyas marcas en el nombre a menos que el campo "marca" exista para ese tipo.
 - DESCARTA info extra que no corresponda a campos definidos.
 

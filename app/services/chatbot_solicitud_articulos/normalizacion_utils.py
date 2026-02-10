@@ -25,7 +25,18 @@ PREFIJOS_REDUNDANTES = ["MARCA ", "TALLA ", "COLOR ", "MODELO ", "TIPO ", "SIZE 
 def normalizar_talla(valor: str) -> str:
     """Normaliza valores de talla a formato estándar."""
     valor = valor.strip().upper()
+    valor = re.sub(r'^\((.+)\)$', r'\1', valor).strip()
     return TALLAS_NORMALIZE.get(valor, valor)
+
+
+def formatear_talla_parentesis(valor: str) -> str:
+    """Asegura que la talla quede entre parentesis cuando exista."""
+    valor = valor.strip()
+    if not valor:
+        return ""
+    if valor.startswith("(") and valor.endswith(")"):
+        return valor
+    return f"({valor})"
 
 
 def normalizar_unidades(texto: str) -> str:
@@ -84,7 +95,7 @@ def normalizar_valor(valor: str, campo: Optional[str] = None) -> str:
     # 3. Manejar valores "sin info"
     if valor in SIN_INFO_VALORES:
         if campo == "talla":
-            return "UNICA"
+            return formatear_talla_parentesis("UNICA")
         return ""
     
     # 4. Normalizar unidades
@@ -95,5 +106,8 @@ def normalizar_valor(valor: str, campo: Optional[str] = None) -> str:
     
     # 6. Limpiar espacios múltiples
     valor = ' '.join(valor.split())
+
+    if campo == "talla" and valor:
+        valor = formatear_talla_parentesis(valor)
     
     return valor
