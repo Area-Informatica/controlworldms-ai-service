@@ -78,6 +78,15 @@ Si el usuario selecciona "NO SÉ LA CATEGORÍA" o escribe una descripción del a
 
 4. **PREGUNTA** solo por campos faltantes.
 
+# REGLAS DE VALIDACIÓN DE CAMPOS (EPP):
+- Valida la COHERENCIA entre Subtipo y Talla:
+  - "CASCO", "LENTE", "PROTECTOR AUDITIVO", "MASCARILLA", "RESPIRADOR" → Talla suele ser "UNICA", pero admite letras (S, M, L).
+  - "ZAPATO", "BOTA" → Talla debe ser numérica (35-46).
+  - "ROPA", "OVEROL", "CHALECO", "PARKA", "CHAQUETA", "BUZO" → Talla suele ser letras (S-XXL), pero admite números si es usual.
+  - "PANTALON" → Talla puede ser numérica (38-56) o letras (S-XXL).
+  - "GUANTE" → Talla letras (S, M, L) o numérica (7, 8, 9, 10).
+- Si el usuario da una talla incoherente (ej: Zapato talla S), CORRIGELO educadamente.
+
 # REGLAS DE EXTRACCIÓN:
 - Limpia prefijos: "color blanco" → "BLANCO", "talla L" → "L", "marca MSA" → "MSA"
 - Normaliza: "blanca" → "BLANCO", "rojos" → "ROJO"

@@ -10,50 +10,62 @@ class UserSimulatorAgent:
         self.goal = ""
         self.article_details = {}
         
-    def set_goal(self, category: str, complexity: str = "medium"):
+    def set_goal(self, category: str, complexity: str = "medium", custom_details: dict = None):
         """Define qué artículo quiere crear el usuario simulado"""
         self.goal = f"Quiero crear un artículo de la categoría {category}."
         
-        # Detalle interno que el agente "sabe" pero no necesariamente dice de inmediato
-        if category == "EPP":
-            self.article_details = {"producto": "Guantes", "material": "Nitrilo", "talla": "L", "uso": "Químico"}
-        elif category == "WOG":
-            self.article_details = {"producto": "Codo", "material": "PVC", "medida": "110mm", "angulo": "90 grados"}
-        elif category == "ELECTRICIDAD":
-            self.article_details = {"producto": "Cable", "tipo": "THHN", "calibre": "12AWG", "color": "Rojo"}
+        if custom_details:
+             self.article_details = custom_details
         else:
-            self.article_details = {"producto": "Generico", "descripcion": "Articulo de prueba"}
+            # Fallback a ejemplos hardcodeados si no se pasan detalles externos
+            if category == "EPP":
+                self.article_details = {"producto": "Guantes", "material": "Nitrilo", "talla": "L", "uso": "Químico"}
+            elif category == "WOG":
+                self.article_details = {"producto": "Codo", "material": "PVC", "medida": "110mm", "angulo": "90 grados"}
+            elif category == "ELECTRICIDAD":
+                self.article_details = {"producto": "Cable", "tipo": "THHN", "calibre": "12AWG", "color": "Rojo"}
+            else:
+                self.article_details = {"producto": "Generico", "descripcion": "Articulo de prueba"}
 
         self.complexity = complexity
 
     def generate_response(self, chatbot_history: list) -> str:
         """Genera la respuesta del usuario basada en lo que dijo el chatbot"""
         
-        system_prompt = f"""
+        # Usamos placeholders {variable} para que LangChain los rellene de forma segura.
+        # Evitamos usar f-strings aquí para que los diccionarios no se confundan con variables de prompt.
+        system_prompt_template = """
         Estás simulando ser un usuario de un sistema de logística.
-        Tu objetivo actual es: {self.goal}
+        Tu objetivo actual es: {goal}
         
-        Tus datos reales (lo que tienes en tu mente) son: {self.article_details}
+        Tus datos reales (lo que tienes en tu mente) son: {article_details}
         
-        PERFIL DE COMPORTAMIENTO: {self._get_profile_instruction()}
+        PERFIL DE COMPORTAMIENTO: {profile_instruction}
         
         Instrucciones:
         1. Responde a la última pregunta del chatbot.
         2. NO des toda la información de golpe a menos que seas el perfil 'Experto'.
         3. Mantén el rol. Sé breve si es necesario.
-        4. Si el chatbot te confirma la creación del artículo, responde con "GRACIAS" o "CONFIRMO".
+        4. Si el chatbot te confirma la creación del artículo o indica que ha terminado, responde ÚNICAMENTE con la palabra clave: "TERMINAR_SIMULACION".
         """
         
-        # Convertir historial simplificado para el prompt
+        # Convertir historial simplificado
         conversation_text = "\n".join([f"{msg['role']}: {msg['content']}" for msg in chatbot_history])
         
         prompt = ChatPromptTemplate.from_messages([
-            ("system", system_prompt),
-            ("user", f"Historial de conversación:\n{conversation_text}\n\nTu respuesta:")
+            ("system", system_prompt_template),
+            ("user", "Historial de conversación:\n{conversation_text}\n\nTu respuesta:")
         ])
         
         chain = prompt | self.llm | StrOutputParser()
-        return chain.invoke({})
+        
+        # Pasamos las variables explícitamente al invoke
+        return chain.invoke({
+            "goal": self.goal,
+            "article_details": str(self.article_details),
+            "profile_instruction": self._get_profile_instruction(),
+            "conversation_text": conversation_text
+        })
 
     def _get_profile_instruction(self) -> str:
         profiles = {

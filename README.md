@@ -83,7 +83,17 @@ controlworldms-ai-service/
 
 ## 🚀 Módulos Disponibles
 
-### 1. Módulo HSE (Salud, Seguridad y Medio Ambiente)
+### 1. Módulo Chatbot Solicitud de Artículos (Estandarización)
+
+Sistema conversacional inteligente diseñado para ayudar a usuarios a crear artículos en el ERP respetando estándares técnicos estrictos.
+
+- **Funcionalidades:**
+    - Conversación dinámica para recolectar atributos técnicos.
+    - Validación de datos en tiempo real (ej: Tallas, Normas de seguridad).
+    - Generación automática de SKUs y Nombres Estandarizados.
+    - Soporte multi-categoría (EPP, Ropa Corporativa, Herramientas, etc.).
+
+### 2. Módulo HSE (Salud, Seguridad y Medio Ambiente)
 
 #### Endpoint: `POST /hse/5-porques`
 
@@ -184,25 +194,52 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
 
 ## 🧪 Testing y Simulación
 
-El proyecto incluye un sistema de **Simulación Multi-Agente** para probar el Chatbot de Estandarización de forma automatizada. Este sistema utiliza un segundo agente (User Simulator) que toma diferentes "personalidades" (usuario confundido, experto, impaciente) para conversar con el chatbot y verificar que el flujo se cumple.
+El proyecto incluye un robusto sistema de **Simulación Multi-Agente (MAS)** para validar el desempeño del Chatbot sin intervención humana. Este framework permite ejecutar cientos de conversaciones simuladas para medir la tasa de éxito, la calidad de la estandarización y optimizar costos.
 
-### Ejecutar Simulación (User Simulator)
+### Arquitectura de Pruebas
 
-Para ejecutar las simulaciones de conversación usuario-chatbot:
+El sistema orquesta una interacción autónoma entre tres componentes principales:
+
+1.  **Chatbot (SUT - System Under Test):** El agente real de IA (Claude-3.5-Sonnet) que intenta estandarizar el artículo.
+2.  **User Simulator:** Un agente ligero (Claude-3-Haiku) que simula comportamientos humanos (ej: usuario confundido, experto, impaciente) y mantiene el estado de su objetivo (ej: "Quiero zapatos talla 42").
+3.  **Expert Judge (LLM-as-a-Judge):** Un evaluador final (Claude-3-Haiku) que analiza el resultado (JSON del artículo creado) contra reglas estrictas de negocio, asignando un puntaje (1-10) y validando coherencia técnica.
+
+### Optimización de Costos
+
+Para minimizar el consumo de tokens en pruebas masivas:
+-   **Regex & Heurísticas:** Se eliminaron evaluaciones LLM intermedias. El éxito de la simulación y la extracción del nombre estandarizado se realizan mediante Patrones Regulares optimizados.
+-   **Failsafes:** Detectores de bucles infinitos (ej: bucles de agradecimiento) que cortan la simulación automáticamente.
+-   **API Retry:** Implementación de *Exponential Backoff* para manejar errores de sobrecarga (529) de la API de Anthropic.
+
+### Ejecución de Simulaciones (CLI)
+
+El script `tests/test_multi_agent_simulation.py` soporta argumentos de línea de comandos para ejecuciones dinámicas:
 
 ```bash
-# Ejecutar todas las pruebas de simulación activas
-python tests/test_multi_agent_simulation.py
+# Uso básico: 3 iteraciones de EPP con usuario "confundido"
+python tests/test_multi_agent_simulation.py -c EPP -p confused -n 3
+
+# Ayuda completa
+python tests/test_multi_agent_simulation.py --help
 ```
 
-El script `tests/test_multi_agent_simulation.py` orquesta la conversación entre:
-1.  **Chatbot de Estandarización:** El agente real que se está desarrollando (Sonnet).
-2.  **UserSimulator:** Un agente ligero (Haiku) que simula ser un humano con objetivos específicos (ej: pedir EPPs, WOG, Electricidad).
+**Argumentos Disponibles:**
 
-Las pruebas incluyen diferentes perfiles de usuario:
--   **Standard:** Usuario cooperativo.
--   **Confused:** Usuario que usa términos informales o no sabe datos técnicos.
--   **Expert:** Usuario que entrega toda la información de una sola vez.
+| Argumento | Flag | Opciones | Descripción |
+|-----------|------|----------|-------------|
+| Categoría | `-c` | `EPP`, `ROPA`, `HERRAMIENTAS`, `WOG`... | Categoría del artículo a simular. |
+| Personalidad | `-p` | `standard`, `confused`, `expert`, `impatient` | Perfil del usuario simulado. |
+| Iteraciones | `-n` | `1` a `100` | Número de simulaciones a ejecutar secuencialmente. |
+| Debug | `--debug` | (flag) | Muestra logs detallados de cada mensaje en consola. |
+
+### Métricas de Evaluación (Expert Judge)
+
+Cada simulación exitosa es auditada por el Juez Experto bajo los siguientes criterios:
+1.  **Validez:** ¿El artículo es un producto real?
+2.  **Formato:** ¿Cumple la estructura `[NOUN] [ATTR1] [ATTR2]...`?
+3.  **Coherencia:** ¿Tienen sentido los atributos combinados? (ej: No permitir "Zapatos dieléctricos de metal").
+
+El reporte final incluye tasa de éxito (SR), puntaje promedio del juez y desglose de costos estimados.
 
 ## 🔌 Integración con ControlWorldMS (Laravel)
 
@@ -298,4 +335,8 @@ Una vez ejecutado el servidor, accede a:
 ## 🗺️ Roadmap
 
 - [x] Módulo HSE - Análisis 5 Porqués
-- [ ] ...
+- [x] Chatbot Estandarización - Core Lógico (Agents & Tools)
+- [x] Framework de Pruebas Multi-Agente (Simulación)
+- [x] Evaluador Automático (LLM-as-a-Judge)
+- [ ] Integración final con API Defontana (ERP)
+- [ ] Dashboard de métricas de IA
