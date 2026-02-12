@@ -54,3 +54,13 @@ def root():
     }
 
 # Nota: No necesitas poner 'if __name__ == "__main__"' porque usaremos Gunicorn/Uvicorn para correrlo.
+# Pero si quieres ejecutarlo con "python main.py" y que lea el .env:
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.getenv("PORT", 8000))
+    app_env = os.getenv("APP_ENV", "local")
+    
+    # Reload activado solo en local
+    should_reload = (app_env == "local")
+    
+    uvicorn.run("main:app", host="127.0.0.1", port=port, reload=should_reload)

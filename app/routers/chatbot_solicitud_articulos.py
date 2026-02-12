@@ -1,6 +1,8 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, UploadFile, File
 from app.schemas.chatbot_solicitud_articulos_schemas import ArticuloRequest, ArticuloResponse
 from app.agents.chatbot_solicitud_articulos_agent import get_estandarizacion_agent
+from app.services.document_service import extract_text_from_file
+from app.agents.document_analyst import analyze_document_content
 from langchain_core.messages import HumanMessage, AIMessage
 from typing import List
 import uuid
@@ -109,6 +111,10 @@ async def estandarizar_articulo(request: ArticuloRequest):
                 if listo_para_crear or opciones_sugeridas:
                     break
         
+        # Ajuste final: si tenemos opciones pero el mensaje es genérico, lo mejoramos
+        if opciones_sugeridas and (not response_text or response_text == "..." or response_text == "Procesando información..."):
+            response_text = "Por favor selecciona una opción:"
+
         # --- LOGGING ---
         try:
             import json
@@ -152,6 +158,33 @@ async def estandarizar_articulo(request: ArticuloRequest):
     except Exception as e:
         print(f"Error en estandarización: {e}")
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+
+@router.post("/analizar-documento")
+async def analizar_documento(file: UploadFile = File(...)):
+    """
+    Recibe un archivo (PDF/TXT), extrae su contenido y genera un resumen técnico 
+    estructurado para ser inyectado en el contexto del chat.
+    """
+    try:
+        # 1. Extraer texto crudo
+        raw_text = await extract_text_from_file(file)
+        
+        if not raw_text or len(raw_text) < 10:
+             raise HTTPException(status_code=400, detail="No se pudo extraer texto legible del archivo.")
+
+        # 2. Analizar con IA especializada (barata/rápida)
+        analysis_summary = analyze_document_content(raw_text)
+        
+        return {
+            "filename": file.filename,
+            "resumen_tecnico": analysis_summary,
+            "mensaje_sugerido": f"He adjuntado el documento '{file.filename}'. Aquí están los detalles técnicos detectados:\n\n{analysis_summary}"
+        }
+        
+    except Exception as e:
+        print(f"Error procesando documento: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/validar-duplicado")

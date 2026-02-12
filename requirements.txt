@@ -7,3 +7,5 @@ python-dotenv
 pydantic
 pytest
 httpx
+pypdf
+python-multipart
