@@ -1,0 +1,51 @@
+name: Deploy AI Service
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Deploy to Server
+      run: |
+        ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'ENDSSH'
+          set -e
+          # 1. Ir a la carpeta del microservicio
+          cd /home/controlworldms/htdocs/ai-service/production
+
+          # 2. Actualizar código
+          echo "📥 Pulling latest code..."
+          git pull origin main
+
+          # 3. Actualizar dependencias en el entorno virtual
+          echo "📦 Installing Python dependencies..."
+          if [ ! -d "venv" ]; then
+            python3 -m venv venv
+          fi
+          source venv/bin/activate
+          pip install -r requirements.txt
+
+          # 4. Reiniciar el servicio
+          # IMPORTANTE: Aquí debes poner el comando real que reinicia tu proceso Python.
+          # Si usas PM2 (común en servidores web):
+          # pm2 restart ai-service || pm2 start main.py --name ai-service --interpreter python3
+          
+          # Si usas Systemd:
+          sudo systemctl restart ai-service
+
+          echo "✅ Deployment completed!"
+        ENDSSH

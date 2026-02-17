@@ -24,7 +24,7 @@ def get_estandarizacion_agent():
     """
     # Usamos la sintaxis moderna con create_agent documentada en docs/core-components/Agents.md
     agent = create_agent(
-        model="claude-sonnet-4-5-20250929",
+        model="claude-3-haiku-20240307",
         tools=ARTICULO_TOOLS,
         system_prompt=SOLICITUD_ARTICULO_AGENT_SYSTEM_PROMPT
     )

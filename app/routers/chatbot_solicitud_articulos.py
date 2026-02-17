@@ -48,41 +48,15 @@ async def estandarizar_articulo(request: ArticuloRequest):
         else:
             response_text = str(last_message.content)
 
-        # Fallback para mensajes vacíos (ej. solo tool calls)
-        if not response_text or not response_text.strip():
-            # Si hay tool calls en el último mensaje
-            if hasattr(last_message, 'tool_calls') and last_message.tool_calls:
-                 # Check if the tool call is preguntar_con_opciones specificially to give a better message
-                is_question = any(tc.get('name') == 'preguntar_con_opciones' for tc in last_message.tool_calls)
-                if is_question:
-                     # This usually means options are provided but no text. 
-                     # We can default to a generic prompt since the UI will show options.
-                     response_text = "Por favor selecciona una opción:"
-                else:
-                    response_text = "Procesando información..."
-            else:
-                # If no content and no tool calls in last message, check previous message for tools
-                # Sometimes the chain ends on a ToolMessage, not AIMessage.
-                found_tool_output = False
-                if len(result["messages"]) >= 2:
-                    second_last = result["messages"][-2]
-                    # If the second to last was a tool call, and last message is empty, 
-                    # maybe the model stopped unexpectedly.
-                    if hasattr(second_last, 'tool_calls') and second_last.tool_calls:
-                         response_text = "Evaluando respuesta..."
-                         found_tool_output = True
-                
-                if not found_tool_output:
-                     response_text = "..."
-
+        # 1. Extracción de herramientas clave (para tener opcion_sugeridas y poder usarlas en el fallback de texto)
         articulo_identificado = None
         listo_para_crear = False
         action = "preguntar"
         opciones_sugeridas = []
-        permitir_input_abierto = True
+        permitir_input = True
+        pregunta_tool_msg = None
 
         # Buscar si se llamó a herramientas clave en los mensajes recientes
-        # Iteramos al revés para encontrar la última acción relevante
         for msg in reversed(result["messages"]):
             if isinstance(msg, AIMessage) and hasattr(msg, 'tool_calls') and msg.tool_calls:
                 for tool_call in msg.tool_calls:
@@ -105,15 +79,38 @@ async def estandarizar_articulo(request: ArticuloRequest):
                             
                     elif name == 'preguntar_con_opciones':
                         opciones_sugeridas = args.get('opciones', [])
-                        permitir_input_abierto = args.get('permitir_otro_valor', True)
+                        permitir_input = args.get('permitir_otro_valor', True)
+                        pregunta_tool_msg = args.get('mensaje') # Capturamos la pregunta real 
                 
-                # Si encontramos alguna acción relevante, nos detenemos (prioridad a finalizar)
                 if listo_para_crear or opciones_sugeridas:
                     break
+
+        # 2. Fallback para mensajes de texto vacíos
+        if not response_text or not response_text.strip():
+            # Si encontramos una pregunta en la tool, usémosla
+            if pregunta_tool_msg:
+                 response_text = pregunta_tool_msg
+            # Si hay tool calls pero no es pregunta directa o no tiene mensaje
+            elif hasattr(last_message, 'tool_calls') and last_message.tool_calls:
+                 response_text = "Procesando opciones..."
+            else:
+                # Caso borde de cadenas cortadas
+                found_tool_output = False
+                if len(result["messages"]) >= 2:
+                    second_last = result["messages"][-2]
+                    if hasattr(second_last, 'tool_calls') and second_last.tool_calls:
+                         response_text = "Evaluando respuesta..."
+                         found_tool_output = True
+                
+                if not found_tool_output:
+                     response_text = "..."
         
-        # Ajuste final: si tenemos opciones pero el mensaje es genérico, lo mejoramos
-        if opciones_sugeridas and (not response_text or response_text == "..." or response_text == "Procesando información..."):
-            response_text = "Por favor selecciona una opción:"
+        # Ajuste final: si tenemos opciones pero el mensaje sigue siendo genérico (ej: "Procesando..."), forzamos
+        if opciones_sugeridas and (not response_text or response_text in ["...", "Procesando información...", "Procesando opciones..."]):
+             if pregunta_tool_msg:
+                 response_text = pregunta_tool_msg
+             else:
+                 response_text = "Por favor selecciona una opción:"
 
         # --- LOGGING ---
         try:
@@ -127,7 +124,7 @@ async def estandarizar_articulo(request: ArticuloRequest):
                 "contexto_previo": request.contexto_conversacion,
                 "ia_respuesta": response_text,
                 "opciones_mostradas": opciones_sugeridas,
-                "permitir_input_abierto": permitir_input_abierto,
+                "permitir_input": permitir_input,
                 "accion_sugerida": action,
                 "estado_final": "listo" if listo_para_crear else "en_proceso"
             }
@@ -151,8 +148,8 @@ async def estandarizar_articulo(request: ArticuloRequest):
             requiere_mas_info=not listo_para_crear,
             listo_para_crear=listo_para_crear,
             accion_sugerida=action,
-            opciones_sugeridas=opciones_sugeridas,
-            permitir_input_abierto=permitir_input_abierto
+            opciones=opciones_sugeridas,
+            permitir_input=permitir_input
         )
         
     except Exception as e:

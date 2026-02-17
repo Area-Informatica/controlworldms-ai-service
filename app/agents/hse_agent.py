@@ -13,7 +13,7 @@ def get_hse_agent():
 
     # Creamos el agente
     agent = create_agent(
-        model="claude-sonnet-4-5-20250929",
+        model="claude-3-haiku-20240307", #"claude-sonnet-4-5-20250929",
         tools=[], 
         system_prompt=HSE_5PORQUE_SYSTEM_PROMPT,
         response_format=IncidentAnalysisResponse

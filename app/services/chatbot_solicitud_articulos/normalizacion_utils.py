@@ -107,6 +107,32 @@ def normalizar_valor(valor: str, campo: Optional[str] = None) -> str:
     # 6. Limpiar espacios múltiples
     valor = ' '.join(valor.split())
 
+    # 7. Reglas directas de normalización por campo (Hard Rules)
+    if " DE " in valor:
+        # Excepciones que SÍ llevan "DE" en el estándar (Izaje principalmente)
+        if valor not in ["CABO DE VIDA", "LINEA DE VIDA", "ACEITE DE MOTOR"]: 
+            # Normalización gramatical general: "FILTRO DE AIRE" -> "FILTRO AIRE"
+            valor = valor.replace(" DE ", " ")
+            valor = ' '.join(valor.split()) # Re-limpiar espacios
+
+    if campo == "conexion":
+        if valor in ["ROSCA", "ROSCADA", "CON ROSCA", "HILO", "CON HILO"]:
+            return "ROSCADA NPT"
+        if valor in ["BRIDA", "CON BRIDA", "FLANGE"]:
+            return "BRIDADA"
+        if valor in ["SOLDAR", "SOLDABLE", "A SOLDAR"]:
+            return "SOLDADA SW"
+
+    if campo == "repuesto":
+        # Mapeos específicos para vehículos
+        if valor == "FILTRO": return "FILTRO AIRE" # Asumir aire si solo dice filtro, o dejar ambiguo? Mejor cuidado.
+        if "BOMBA" in valor and "AGUA" in valor: return "BOMBA AGUA"
+        if "PASTILLA" in valor: return "PASTILLA FRENO"
+        if "DISCO" in valor and "FRENO" in valor: return "DISCO FRENO"
+
+        if valor in ["SOLDAR", "SOLDABLE", "A SOLDAR"]:
+            return "SOLDADA SW"
+
     if campo == "talla" and valor:
         valor = formatear_talla_parentesis(valor)
     

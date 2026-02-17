@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import hse, chatbot_solicitud_articulos
 # from app.routers import rrhh  <-- Descomentarás esto cuando crees el módulo de RRHH
@@ -40,9 +40,29 @@ app.add_middleware(
 # 3. Registro de Rutas (Routers)
 # Aquí le dices a FastAPI: "Todo lo que esté en hse.py, ponlo bajo la url /hse"
 app.include_router(hse.router, prefix="/hse", tags=["HSE"])
-app.include_router(chatbot_solicitud_articulos.router, prefix="/chatbot/solicitud-articulos", tags=["Chatbot Solicitud Artículos"])
+app.include_router(chatbot_solicitud_articulos.router, prefix="/chatbot-solicitud-articulos", tags=["Chatbot Solicitud Artículos"])
 
 # app.include_router(rrhh.router, prefix="/rrhh", tags=["RRHH"]) <-- Futuro módulo
+
+# Middleware de logging visible
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    print(f"👉 [REQUEST] {request.method} {request.url}")
+    try:
+        response = await call_next(request)
+        print(f"👈 [RESPONSE] {response.status_code}")
+        return response
+    except Exception as e:
+        print(f"❌ [ERROR] {e}")
+        raise e
+
+@app.on_event("startup")
+def print_routes():
+    print("\n🗺️  RUTAS REGISTRADAS:")
+    for route in app.routes:
+        if hasattr(route, "methods"):
+            print(f" - {route.methods} {route.path}")
+    print("\n")
 
 # 4. Ruta de prueba (Health Check)
 @app.get("/")

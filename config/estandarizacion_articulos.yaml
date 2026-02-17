@@ -54,7 +54,7 @@ WOG:
     material:
       requerido: true
       tipo: lista_abierta
-      valores_estandar: [INOX 304, INOX 316, ACERO CARBONO, GALVANIZADO, BRONCE, PVC, CPVC, HDPE, POLIPROPILENO]
+      valores_estandar: [INOX 304, INOX 316, ACERO INOX, ACERO CARBONO, HIERRO NEGRO, HIERRO MALEABLE, GALVANIZADO, BRONCE, PVC, CPVC, HDPE, POLIPROPILENO]
     conexion:
       requerido: true
       tipo: lista_abierta
